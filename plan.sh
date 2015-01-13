@@ -17,6 +17,8 @@ else
     exit 1
 fi
 
+source $WORKFLOW_DIR/env.sh
+
 DIR=$(cd $(dirname $0) && pwd)
 SUBMIT_DIR=$WORKFLOW_DIR/submit
 DAX=$WORKFLOW_DIR/dax.xml
@@ -34,7 +36,7 @@ pegasus-plan \
     --conf $PP \
     --dax $DAX \
     --dir $SUBMIT_DIR \
-    --relative-dir MYCASE \
+    --relative-dir $CASENAME \
     --sites $SITE \
     --output-site $OUTPUT_SITE \
     --cleanup none \
