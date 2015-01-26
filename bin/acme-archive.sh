@@ -38,5 +38,5 @@ CASE=$(./xmlquery CASE -valonly -silent)
 RUNDIR=$(./xmlquery RUNDIR -valonly -silent)
 RUNDIR=$(cd $RUNDIR && pwd)
 
-tar -cz -f ${CASE}.stage${STAGE}.tar.gz -C $RUNDIR ${CASE}.*
+tar -czv -f ${CASE}.stage${STAGE}.tar.gz -C $RUNDIR ${CASE}.*
 

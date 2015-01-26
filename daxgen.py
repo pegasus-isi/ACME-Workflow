@@ -64,9 +64,9 @@ class ACMEWorkflow(object):
         f = open(path, "w")
         try:
             f.write("""
-tr acme {
+tr acme-run {
     site local {
-        pfn "file://%s/bin/acme.sh"
+        pfn "file://%s/bin/acme-run.sh"
         arch "x86_64"
         os "linux"
         type "STAGEABLE"
@@ -76,9 +76,9 @@ tr acme {
     }
 }
 
-tr archive {
+tr acme-archive {
     site local {
-        pfn "file://%s/bin/archive.sh"
+        pfn "file://%s/bin/acme-archive.sh"
         arch "x86_64"
         os "linux"
         type "STAGEABLE"
@@ -98,7 +98,7 @@ tr archive {
 
         i = 1
         for stop_n, walltime in zip(self.stop_n, self.walltime):
-            stage = Job(name="acme")
+            stage = Job(name="acme-run")
             if i > 1:
                 stage.addArguments("-continue")
             stage.addArguments("-stage %s -stop %s -n %s" % (i, self.stop_option, stop_n))
@@ -110,7 +110,7 @@ tr archive {
 
             output = File("%s.stage%s.tar.gz" % (self.casename, i))
 
-            archive = Job(name="archive")
+            archive = Job(name="acme-archive")
             archive.addArguments("-stage %s" % i)
             archive.uses(output, link=Link.OUTPUT, register=False, transfer=True)
             archive.addProfile(Profile(namespace="globus", key="maxwalltime", value="30"))
