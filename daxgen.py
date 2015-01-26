@@ -72,9 +72,21 @@ tr acme {
         type "STAGEABLE"
         profile pegasus "exitcode.successmsg" "SUCCESSFUL TERMINATION"
         profile globus "count" "%s"
+        profile globus "jobtype" "single"
     }
 }
-""" % (DAXGEN_DIR, self.mppwidth))
+
+tr archive {
+    site local {
+        pfn "file://%s/bin/archive.sh"
+        arch "x86_64"
+        os "linux"
+        type "STAGEABLE"
+        profile globus "count" "1"
+        profile globus "jobtype" "single"
+    }
+}
+""" % (DAXGEN_DIR, self.mppwidth, DAXGEN_DIR))
         finally:
             f.close()
 
@@ -86,18 +98,28 @@ tr acme {
 
         i = 1
         for stop_n, walltime in zip(self.stop_n, self.walltime):
-            stage = Job(name="acme", node_label="stage%s" % i)
-            stage.addArguments("-run stage%s -stop %s -n %s" % (i, self.stop_option, stop_n))
+            stage = Job(name="acme")
+            if i > 1:
+                stage.addArguments("-continue")
+            stage.addArguments("-stage %s -stop %s -n %s" % (i, self.stop_option, stop_n))
             stage.addProfile(Profile(namespace="globus", key="maxwalltime", value=walltime))
-            # TODO Add output files
             dax.addJob(stage)
-
-            # TODO Add data analysis job
 
             if last is not None:
                 dax.depends(stage, last)
 
-            last = stage
+            output = File("%s.stage%s.tar.gz" % (self.casename, i))
+
+            archive = Job(name="archive")
+            archive.addArguments("-stage %s" % i)
+            archive.uses(output, link=Link.OUTPUT, register=False, transfer=True)
+            archive.addProfile(Profile(namespace="globus", key="maxwalltime", value="30"))
+            dax.addJob(archive)
+            dax.depends(archive, stage)
+
+            # TODO Add data analysis job
+
+            last = archive
             i+=1
 
         # Write the DAX file
