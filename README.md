@@ -43,6 +43,13 @@ On Submit Host
 
 1. Create/edit the configuration file (e.g. test.cfg)
 
+ a. Set "casename" to match the name of your case.
+
+ b. Set "mppwidth" to match the $CASENAME.run script in your case dir
+
+ c. Set "stop_n" and "walltime" to create the number of stages you want
+    the workflow to have.
+
 2. Generate the DAX
 
     $ python daxgen.py test.cfg $CASENAME
