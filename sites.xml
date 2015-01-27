@@ -15,7 +15,7 @@
             <file-server operation="all" url="gsiftp://hoppergrid.nersc.gov/scratch/scratchdirs/juve"/>
         </directory>
         <directory type="shared-storage" path="/project/projectdirs/m2187/pegasus">
-            <file-server operation="all" url="gsiftp://hoppergrid.nersc.gov/project/projectdirs/m2187/pegasus" />
+            <file-server operation="all" url="gsiftp://hoppergrid.nersc.gov/project/projectdirs/m2187" />
         </directory>
         <profile namespace="env" key="PEGASUS_HOME">/project/projectdirs/m2187/pegasus/pegasus-4.4.0</profile>
         <profile namespace="globus" key="project">m2187</profile>
