@@ -74,11 +74,20 @@ fi
 ./xmlchange -file env_run.xml -id STOP_OPTION -val $STOP_OPTION
 ./xmlchange -file env_run.xml -id STOP_N -val $STOP_N
 
+# Disable archiving and timing
+./xmlchange -file env_run.xml -id DOUT_S -val FALSE
+./xmlchange -file env_run.xml -id DOUT_L_MS -val FALSE
+./xmlchange -file env_run.xml -id CHECK_TIMING -val FALSE
+./xmlchange -file env_run.xml -id SAVE_TIMING -val FALSE
+
 # We might need to change these
 #./xmlchange -file env_run.xml -id RUNDIR -val $PWD/$RUN
 #./xmlchange -file env_run.xml -id DOUT_S_ROOT -val \$CASEROOT/archive
 
 # Get the case name and invoke the script
 CASE=$(./xmlquery CASE -valonly -silent)
-exec $CASE.run
+./$CASE.run || true
+
+# We always exit with 0 and use exitcode.successmessage to detect failures
+exit 0
 
