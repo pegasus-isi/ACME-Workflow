@@ -3,7 +3,7 @@
 set -e
 
 function usage () {
-    echo "Usage: $0 [-continue] -stage N -stop STOP_OPTION -n STOP_N -run RUN"
+    echo "Usage: $0 [-continue] -stage N -stop STOP_OPTION -n STOP_N"
 }
 
 if [ $# -eq 0 ]; then
