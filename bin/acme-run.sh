@@ -6,7 +6,7 @@ function usage () {
     echo "Usage: $0 [-continue] -stage N -stop STOP_OPTION -n STOP_N -run RUN"
 }
 
-if [ "$#" == "0" ]; then
+if [ $# -eq 0 ]; then
     usage
     exit 1
 fi
@@ -18,6 +18,7 @@ while [ "$#" -ne 0 ]; do
             CONTINUE_RUN=TRUE
             ;;
         -stage)
+            shift
             STAGE=$1
             ;;
         -stop)
