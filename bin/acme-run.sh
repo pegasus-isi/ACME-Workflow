@@ -60,10 +60,6 @@ if [ -z "$STOP_OPTION" ]; then
     exit 1
 fi
 
-if ! [ -z "$PBS_O_WORKDIR" ]; then
-    cd $PBS_O_WORKDIR
-fi
-
 # We never want to resubmit the jobs in the Pegasus workflow
 ./xmlchange -file env_run.xml -id RESUBMIT -val 0
 
@@ -74,20 +70,20 @@ fi
 ./xmlchange -file env_run.xml -id STOP_OPTION -val $STOP_OPTION
 ./xmlchange -file env_run.xml -id STOP_N -val $STOP_N
 
-# Disable archiving and timing
+# Disable archiving
 ./xmlchange -file env_run.xml -id DOUT_S -val FALSE
 ./xmlchange -file env_run.xml -id DOUT_L_MS -val FALSE
+
+# Disable timing
 ./xmlchange -file env_run.xml -id CHECK_TIMING -val FALSE
 ./xmlchange -file env_run.xml -id SAVE_TIMING -val FALSE
 
-# We might need to change these
-#./xmlchange -file env_run.xml -id RUNDIR -val $PWD/$RUN
-#./xmlchange -file env_run.xml -id DOUT_S_ROOT -val \$CASEROOT/archive
-
-# Get the case name and invoke the script
+# Get the case name
 CASE=$(./xmlquery CASE -valonly -silent)
+
+# This script often returns non-zero, so we need to mask the failure
+# We use exitcode.successmessage to detect failures
 ./$CASE.run || true
 
-# We always exit with 0 and use exitcode.successmessage to detect failures
 exit 0
 
