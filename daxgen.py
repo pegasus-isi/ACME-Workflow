@@ -71,18 +71,18 @@ tr acme-run {
         os "linux"
         type "STAGEABLE"
         profile pegasus "exitcode.successmsg" "SUCCESSFUL TERMINATION"
-        profile globus "count" "%s"
+        profile globus "hostcount" "%s"
         profile globus "jobtype" "single"
     }
 }
 
-tr acme-archive {
+tr acme-output {
     site local {
-        pfn "file://%s/bin/acme-archive.sh"
+        pfn "file://%s/bin/acme-output.sh"
         arch "x86_64"
         os "linux"
         type "STAGEABLE"
-        profile globus "count" "1"
+        profile globus "hostcount" "1"
         profile globus "jobtype" "single"
     }
 }
@@ -110,7 +110,7 @@ tr acme-archive {
 
             output = File("%s.stage%s.tar.gz" % (self.casename, i))
 
-            archive = Job(name="acme-archive")
+            archive = Job(name="acme-output")
             archive.addArguments("-stage %s" % i)
             archive.uses(output, link=Link.OUTPUT, register=False, transfer=True)
             archive.addProfile(Profile(namespace="globus", key="maxwalltime", value="30"))
