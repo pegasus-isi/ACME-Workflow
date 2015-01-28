@@ -3,6 +3,9 @@ ACME-Workflow
 
 Pegasus workflow for ACME climate models.
 
+Consult the [CESM User's Guide](http://www.cesm.ucar.edu/models/cesm1.2/cesm/doc/usersguide/book1.html)
+for more information about the climate code used by this workflow.
+
 On Hopper
 ---------
 You need to create the case while logged into Hopper.
@@ -23,9 +26,10 @@ option for the Pegasus planner so that CASEDIR will become Pegasus' scratch dir.
     $ ./create_newcase -case $CASEDIR -mach hopper -compset F1850 -res T31_g37 -project m2187
 
  In this case "m2187" is our Hopper project ID, and "mach" means "machine"
- and should be set to "hopper". The "compset" defines what initial conditions
- you want to use, and "res" specifies the resolution. Possible compsets: F1850, B1850.
- Possible resolutions: ne30_g16, T31_g37.
+ and should be set to "hopper". The "compset" defines the component set, or the
+ set of model components and configuration you want to use, and "res" specifies
+ the resolution, or grid setting. Possible compsets include: F1850, B1850. 
+ Possible grids include: ne30_g16, T31_g37.
 
 2. Make any manual changes to the case that are required for your simulation.
 
