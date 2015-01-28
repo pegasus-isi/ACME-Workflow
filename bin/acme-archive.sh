@@ -31,16 +31,26 @@ if [ -z "$STAGE" ]; then
     exit 1
 fi
 
-if ! [ -z "$PBS_O_WORKDIR" ]; then
-    cd $PBS_O_WORKDIR
-fi
-
+# Get the case name
 CASE=$(./xmlquery CASE -valonly -silent)
+
+# Get the full path to the run directory
 RUNDIR=$(./xmlquery RUNDIR -valonly -silent)
 RUNDIR=$(cd $RUNDIR && pwd)
+
+# Get the workflow scratch directory
 DIR=$(pwd)
+
+# The tar works better from the run dir
 cd $RUNDIR
+
+# Touch this file here so that it will always exist, even if it is empty
+# for the first stage
 touch outputs_to_ignore
+
+# Tar up all the output files, but ignore outputs from previous stages
 tar -czv -f $DIR/${CASE}.stage${STAGE}.tar.gz -X outputs_to_ignore ${CASE}.*
+
+# Update the ignore file to ignore outputs from the current stage
 ls ${CASE}.* > outputs_to_ignore
 
