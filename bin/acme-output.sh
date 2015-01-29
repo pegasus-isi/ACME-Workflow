@@ -49,8 +49,8 @@ cd $RUNDIR
 touch outputs_to_ignore
 
 # Tar up all the output files, but ignore outputs from previous stages
-tar -czv -f $DIR/${CASE}.stage${STAGE}.tar.gz -X outputs_to_ignore ${CASE}.*
+tar -czv -f $DIR/${CASE}.stage${STAGE}.tar.gz -X outputs_to_ignore ${CASE}.* rpointer.* *.log.*.gz
 
 # Update the ignore file to ignore outputs from the current stage
-ls ${CASE}.* > outputs_to_ignore
+ls ${CASE}.* *.log.* > outputs_to_ignore
 
