@@ -18,6 +18,7 @@
             <file-server operation="all" url="gsiftp://hoppergrid.nersc.gov/project/projectdirs/m2187" />
         </directory>
         <profile namespace="env" key="PEGASUS_HOME">/project/projectdirs/m2187/pegasus/pegasus-4.4.0</profile>
+        <profile namespace="env" key="DIAG_HOME">/project/projectdirs/m2187/amwg/amwg_diagnostics</profile>
         <profile namespace="globus" key="project">m2187</profile>
         <profile namespace="globus" key="queue">regular</profile>
     </site>

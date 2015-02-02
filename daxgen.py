@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sys
+import re
 import string
 from ConfigParser import ConfigParser
 from Pegasus.DAX3 import *
@@ -11,8 +12,13 @@ def format_template(name, outfile, **kwargs):
     "This fills in the values for the template called 'name' and writes it to 'outfile'"
     templatefile = os.path.join(TEMPLATE_DIR, name)
     template = open(templatefile).read()
-    formatter = string.Formatter()
-    data = formatter.format(template, **kwargs)
+
+    def repl(match):
+        key = match.group(1)
+        return str(kwargs[key])
+
+    data = re.sub("\{\{([a-z0-9A-Z-._]+)\}\}", repl, template)
+
     f = open(outfile, "w")
     try:
         f.write(data)
@@ -86,9 +92,34 @@ tr acme-output {
         profile globus "jobtype" "single"
     }
 }
-""" % (DAXGEN_DIR, self.mppwidth, DAXGEN_DIR))
+
+tr acme-amwg {
+    site local {
+        pfn "file://%s/bin/acme-amwg.sh"
+        arch "x86_64"
+        os "linux"
+        type "STAGEABLE"
+        profile globus "hostcount" "1"
+        profile globus "jobtype" "single"
+    }
+}
+""" % (DAXGEN_DIR, self.mppwidth, DAXGEN_DIR, DAXGEN_DIR))
         finally:
             f.close()
+
+    def generate_amwg_script(self, stage, first_yr, nyrs):
+        "Generate the amwg script with the appropriate config"
+        name = "diag140804.stage%s.csh" % stage
+        path = os.path.join(self.outdir, name)
+        kw = {
+            "first_yr": first_yr,
+            "nyrs": nyrs,
+            "casename": self.casename,
+            "stage": stage
+        }
+        format_template("diag140804.csh", path, **kw)
+        self.add_replica(name, path)
+        return name
 
     def generate_dax(self):
         "Generate a workflow (DAX, config files, and replica catalog)"
@@ -96,6 +127,13 @@ tr acme-output {
 
         last = None
 
+        if self.stop_option in ["nyear", "nyears"]:
+            amwg = True
+        else:
+            print "WARNING: Diagnostics not added to workflow unles stop option is 'nyears'. Current setting is '%s'" % self.stop_option
+            amwg = False
+
+        tot_years = 0
         i = 1
         for stop_n, walltime in zip(self.stop_n, self.walltime):
             stage = Job(name="acme-run")
@@ -117,7 +155,34 @@ tr acme-output {
             dax.addJob(archive)
             dax.depends(archive, stage)
 
-            # TODO Add data analysis job
+            # Figure out how many years we have at this point
+            cur_years = int(stop_n)
+            tot_years = tot_years + cur_years
+
+            # Add diagnostics job for atmosphere
+            if amwg:
+                if tot_years <= 1:
+                    print "WARNING: First stage does not have enough years for diagnostics"
+                else:
+                    # The first year doesn't count, do no more than 5 years
+                    nyrs = min(tot_years-1, 5)
+
+                    # Years start at 1, not 0
+                    first_yr = tot_years - nyrs + 1
+
+                    # Create the amwg script
+                    script_name = self.generate_amwg_script(i, first_yr, nyrs)
+                    script = File(script_name)
+
+                    diagnostics = File("amwg-stage%s" % i)
+
+                    # Add the job
+                    diag = Job(name="acme-amwg")
+                    diag.addArguments(script)
+                    diag.uses(script, link=Link.INPUT)
+                    diag.uses(diagnostics, link=Link.OUTPUT, register=False, transfer=True)
+                    dax.addJob(diag)
+                    dax.depends(diag, stage)
 
             last = archive
             i+=1
