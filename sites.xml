@@ -19,6 +19,7 @@
         </directory>
         <profile namespace="env" key="PEGASUS_HOME">/project/projectdirs/m2187/pegasus/pegasus-4.4.0</profile>
         <profile namespace="env" key="DIAG_HOME">/project/projectdirs/m2187/amwg/amwg_diagnostics</profile>
+        <profile namespace="env" key="MAGICK_HOME">/project/projectdirs/m2187/ImageMagick-6.9.0.4</profile>
         <profile namespace="globus" key="project">m2187</profile>
         <profile namespace="globus" key="queue">regular</profile>
         <profile namespace="condor" key="periodic_remove">False</profile>

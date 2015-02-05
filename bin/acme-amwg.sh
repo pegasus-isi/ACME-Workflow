@@ -7,6 +7,15 @@ if [ $# -ne 1 ]; then
     exit 1
 fi
 
+# Make sure ImageMagick is on the path
+if [ -z "$(which convert)" ]; then
+    if [ -z "$MAGICK_HOME" ]; then
+        echo "ImageMagick not found. Set MAGICK_HOME."
+        exit 1
+    fi
+    export PATH=$PATH:$MAGICK_HOME/bin
+fi
+
 # Need to load the modules for the diagnostics code
 module load ncl
 module load nco
