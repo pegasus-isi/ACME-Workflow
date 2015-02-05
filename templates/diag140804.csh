@@ -112,8 +112,8 @@ set test_filetype = monthly_history
 #set test_path_climo   =  /glade/scratch/hannay/amwg/climo/$test_casename/ 
 #set test_path_diag    =  /glade/scratch/hannay/amwg/diag/$test_casename/
 set test_path_history =  $PWD/run/
-set test_path_climo   =  $PWD/amwg-stage{{stage}}/
-set test_path_diag    =  $PWD/amwg-stage{{stage}}/
+set test_path_climo   =  $PWD/{{casename}}-amwg-stage{{stage}}/
+set test_path_diag    =  $PWD/{{casename}}-amwg-stage{{stage}}/
 set test_path_HPSS    =  $test_path_history
 
 #******************************************************************

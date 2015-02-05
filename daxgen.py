@@ -149,7 +149,8 @@ tr acme-amwg {
             if last is not None:
                 dax.depends(stage, last)
 
-            output = File("%s.stage%s.tar.gz" % (self.casename, i))
+            # This is actually a directory
+            output = File("%s-stage%s" % (self.casename, i))
 
             archive = Job(name="acme-output")
             archive.addArguments("-stage %s" % i)
@@ -177,7 +178,8 @@ tr acme-amwg {
                     script_name = self.generate_amwg_script(i, first_yr, nyrs)
                     script = File(script_name)
 
-                    diagnostics = File("amwg-stage%s" % i)
+                    # This is actually a directory
+                    diagnostics = File("%s-amwg-stage%s" % (self.casename, i))
 
                     # Add the job
                     diag = Job(name="acme-amwg")
