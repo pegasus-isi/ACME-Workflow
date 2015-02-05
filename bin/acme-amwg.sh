@@ -14,6 +14,6 @@ module load nco
 # Chmod the templated script for this stage
 chmod 755 $1
 
-# Run the script on a compute node
-aprun -n 1 ./$1
+# Run the script on the service node
+./$1 || true
 
