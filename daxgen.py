@@ -101,6 +101,9 @@ tr acme-amwg {
         type "STAGEABLE"
         profile globus "hostcount" "1"
         profile globus "jobtype" "single"
+        profile pegasus "exitcode.successmsg" "NORMAL EXIT FROM SCRIPT"
+        profile pegasus "exitcode.failuremsg" "CONVERT NOT FOUND"
+        profile pegasus "exitcode.failuremsg" "Segmentation fault"
     }
 }
 """ % (DAXGEN_DIR, self.mppwidth, DAXGEN_DIR, DAXGEN_DIR))
@@ -181,6 +184,7 @@ tr acme-amwg {
                     diag.addArguments(script)
                     diag.uses(script, link=Link.INPUT)
                     diag.uses(diagnostics, link=Link.OUTPUT, register=False, transfer=True)
+                    diag.addProfile(Profile(namespace="globus", key="maxwalltime", value="30"))
                     dax.addJob(diag)
                     dax.depends(diag, stage)
 
