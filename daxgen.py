@@ -150,7 +150,7 @@ tr acme-amwg {
                 dax.depends(stage, last)
 
             # This is actually a directory
-            output = File("%s-stage%s" % (self.casename, i))
+            output = File("%s-stage%s/" % (self.casename, i))
 
             archive = Job(name="acme-output")
             archive.addArguments("-stage %s" % i)
@@ -179,7 +179,7 @@ tr acme-amwg {
                     script = File(script_name)
 
                     # This is actually a directory
-                    diagnostics = File("%s-amwg-stage%s" % (self.casename, i))
+                    diagnostics = File("%s-amwg-stage%s/" % (self.casename, i))
 
                     # Add the job
                     diag = Job(name="acme-amwg")
