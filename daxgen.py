@@ -77,7 +77,7 @@ tr acme-run {
         os "linux"
         type "STAGEABLE"
         profile pegasus "exitcode.successmsg" "SUCCESSFUL TERMINATION"
-        profile globus "hostcount" "%s"
+        profile globus "count" "%s"
         profile globus "jobtype" "single"
     }
 }
@@ -88,7 +88,7 @@ tr acme-output {
         arch "x86_64"
         os "linux"
         type "STAGEABLE"
-        profile globus "hostcount" "1"
+        profile globus "count" "1"
         profile globus "jobtype" "single"
     }
 }
@@ -99,7 +99,7 @@ tr acme-amwg {
         arch "x86_64"
         os "linux"
         type "STAGEABLE"
-        profile globus "hostcount" "0"
+        profile globus "count" "0"
         profile globus "jobtype" "single"
         profile pegasus "exitcode.successmsg" "NORMAL EXIT FROM SCRIPT"
         profile pegasus "exitcode.failuremsg" "CONVERT NOT FOUND"
