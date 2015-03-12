@@ -18,7 +18,7 @@ Steps to Run the Workflow
  c. Set "stop_n" and "walltime" to create the number of stages you want
     the workflow to have.
 
-2. Create/edit the setup script (e.g. setup.sh)
+2. Create/edit the setup script (e.g. setup-hopper-F1850-T31_g37.sh)
 
  a. Set the create_newcase parameters
 
