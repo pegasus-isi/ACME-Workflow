@@ -18,13 +18,13 @@ Steps to Run the Workflow
  c. Set "stop_n" and "walltime" to create the number of stages you want
     the workflow to have.
 
-2. Create/edit the setup script (e.g. setup-hopper-F1850-T31_g37.sh)
+2. Create/edit the setup script (e.g. mysetup.sh)
 
  a. Set the create_newcase parameters
 
 3. Generate the DAX
 
-    $ python daxgen.py test.cfg setup.sh DIRNAME
+    $ python daxgen.py test.cfg mysetup.sh DIRNAME
 
 4. Edit the site catalog, sites.xml:
 
