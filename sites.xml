@@ -10,14 +10,16 @@
     <site handle="hopper" arch="x86_64" os="LINUX">
         <grid type="gt5" contact="hoppergrid.nersc.gov/jobmanager" scheduler="Fork" jobtype="auxillary"/>
         <grid type="gt5" contact="hoppergrid.nersc.gov/jobmanager-pbs" scheduler="PBS" jobtype="compute"/>
-        <!-- Your case dir must be in shared-scratch. Put your username here instead of "juve". -->
+        <!-- This is where the casedir goes. Put your username here instead of "juve". -->
         <directory type="shared-scratch" path="/scratch/scratchdirs/juve">
             <file-server operation="all" url="gsiftp://hoppergrid.nersc.gov/scratch/scratchdirs/juve"/>
         </directory>
+        <!-- This is where output files go. -->
         <directory type="shared-storage" path="/project/projectdirs/m2187/pegasus">
             <file-server operation="all" url="gsiftp://hoppergrid.nersc.gov/project/projectdirs/m2187" />
         </directory>
         <profile namespace="env" key="PEGASUS_HOME">/project/projectdirs/m2187/pegasus/pegasus-4.4.0</profile>
+        <profile namespace="env" key="ACMEROOT">/global/project/projectdirs/m2187/acme_code/ACME</profile>
         <profile namespace="env" key="DIAG_HOME">/project/projectdirs/m2187/amwg/amwg_diagnostics</profile>
         <profile namespace="env" key="MAGICK_HOME">/project/projectdirs/m2187/ImageMagick-6.9.0.4</profile>
         <profile namespace="globus" key="project">m2187</profile>

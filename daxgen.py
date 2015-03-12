@@ -2,6 +2,7 @@
 import os
 import sys
 import re
+import shutil
 import string
 from ConfigParser import ConfigParser
 from Pegasus.DAX3 import *
@@ -27,9 +28,10 @@ def format_template(name, outfile, **kwargs):
         f.close()
 
 class ACMEWorkflow(object):
-    def __init__(self, outdir, config):
+    def __init__(self, outdir, setup, config):
         "'outdir' is the directory where the workflow is written, and 'config' is a ConfigParser object"
         self.outdir = outdir
+        self.setup = setup
         self.config = config
         self.daxfile = os.path.join(self.outdir, "dax.xml")
         self.replicas = {}
@@ -71,6 +73,18 @@ class ACMEWorkflow(object):
         f = open(path, "w")
         try:
             f.write("""
+tr acme-setup {
+    site local {
+        pfn "file://%s/bin/acme-setup.sh"
+        arch "x86_64"
+        os "linux"
+        type "STAGEABLE"
+        profile globus "count" "1"
+        profile globus "jobtype" "single"
+        profile hints "globusScheduler" "auxiliary"
+    }
+}
+
 tr acme-run {
     site local {
         pfn "file://%s/bin/acme-run.sh"
@@ -107,7 +121,7 @@ tr acme-amwg {
         profile pegasus "exitcode.failuremsg" "Segmentation fault"
     }
 }
-""" % (DAXGEN_DIR, self.mppwidth, DAXGEN_DIR, DAXGEN_DIR))
+""" % (DAXGEN_DIR, DAXGEN_DIR, self.mppwidth, DAXGEN_DIR, DAXGEN_DIR))
         finally:
             f.close()
 
@@ -129,23 +143,32 @@ tr acme-amwg {
         "Generate a workflow (DAX, config files, and replica catalog)"
         dax = ADAG(self.casename)
 
-        last = None
-
         if self.stop_option in ["nyear", "nyears"]:
             amwg = True
         else:
             print "WARNING: Diagnostics not added to workflow unles stop option is 'nyears'. Current setting is '%s'" % self.stop_option
             amwg = False
 
+        # Add the setup stage
+        setupscript = File(self.setup)
+        setup = Job(name="acme-setup")
+        setup.addArguments("-case", self.casename, "-setup", setupscript)
+        setup.uses(setupscript, link=Link.INPUT, register=False, transfer=True)
+        dax.addJob(setup)
+        self.add_replica(self.setup, os.path.join(self.outdir, self.setup))
+
+        last = None
         tot_years = 0
         i = 1
         for stop_n, walltime in zip(self.stop_n, self.walltime):
             stage = Job(name="acme-run")
-            if i > 1:
-                stage.addArguments("-continue")
             stage.addArguments("-stage %s -stop %s -n %s" % (i, self.stop_option, stop_n))
             stage.addProfile(Profile(namespace="globus", key="maxwalltime", value=walltime))
             dax.addJob(stage)
+            if i == 1:
+                dax.depends(stage, setup)
+            else:
+                stage.addArguments("-continue")
 
             if last is not None:
                 dax.depends(stage, last)
@@ -198,34 +221,42 @@ tr acme-amwg {
         dax.writeXMLFile(self.daxfile)
 
     def generate_workflow(self):
-        if os.path.isdir(self.outdir):
-            raise Exception("Directory exists: %s" % self.outdir)
-
-        # Create the output directory
-        self.outdir = os.path.abspath(self.outdir)
-        os.makedirs(self.outdir)
-
         self.generate_dax()
         self.generate_replica_catalog()
         self.generate_transformation_catalog()
         self.generate_env()
 
 def main():
-    if len(sys.argv) != 3:
-        raise Exception("Usage: %s CONFIGFILE OUTDIR" % sys.argv[0])
+    if len(sys.argv) != 4:
+        raise Exception("Usage: %s CONFIGFILE SETUP OUTDIR" % sys.argv[0])
 
     configfile = sys.argv[1]
-    outdir = sys.argv[2]
+    setup = sys.argv[2]
+    outdir = sys.argv[3]
 
     if not os.path.isfile(configfile):
-        raise Exception("No such file: %s" % configfile)
+        raise Exception("Invalid CONFIGFILE: No such file: %s" % configfile)
+
+    if not os.path.isfile(setup):
+        raise Exception("Invalid SETUP script: No such file: %s" % setup)
+
+    outdir = os.path.abspath(outdir)
+    if os.path.isdir(outdir):
+        raise Exception("Directory exists: %s" % outdir)
 
     # Read the config file
     config = ConfigParser()
     config.read(configfile)
 
+    # Create the output directory
+    os.makedirs(outdir)
+
+    # Save a copy of the config file and setup script
+    shutil.copy(configfile, outdir)
+    shutil.copy(setup, outdir)
+
     # Generate the workflow in outdir based on the config file
-    workflow = ACMEWorkflow(outdir, config)
+    workflow = ACMEWorkflow(outdir, os.path.basename(setup), config)
     workflow.generate_workflow()
 
 

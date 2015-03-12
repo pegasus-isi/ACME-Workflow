@@ -36,7 +36,6 @@ pegasus-plan \
     --conf $PP \
     --dax $DAX \
     --dir $SUBMIT_DIR \
-    --relative-dir $CASENAME \
     --sites $SITE \
     --output-site $OUTPUT_SITE \
     --cleanup none \
