@@ -51,7 +51,7 @@ if [ -z "$SETUP_SCRIPT" ]; then
 fi
 
 SCRATCHDIR=$PWD
-export CASEROOT=$SCRATCHDIR/$CASENAME
+CASEROOT=$SCRATCHDIR/$CASENAME
 
 echo "CASENAME is $CASENAME"
 echo "Setting CASEROOT to $CASEROOT"
@@ -66,6 +66,10 @@ fi
 
 # Mark the setup script as executable
 chmod 755 $SETUP_SCRIPT
+
+export CASENAME
+export CASEROOT
+export ACMEROOT
 
 # Run the setup script
 ./$SETUP_SCRIPT
