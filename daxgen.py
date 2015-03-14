@@ -81,7 +81,7 @@ tr acme-setup {
         type "STAGEABLE"
         profile globus "count" "1"
         profile globus "jobtype" "single"
-        profile hints "globusScheduler" "auxiliary"
+        profile hints "grid.jobtype" "auxillary"
     }
 }
 
