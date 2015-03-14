@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -l
 # This script creates a new case, runs cesm_setup, and builds the code
 set -e
 
