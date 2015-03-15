@@ -6,6 +6,7 @@ import shutil
 import string
 from ConfigParser import ConfigParser
 from Pegasus.DAX3 import *
+from datetime import datetime
 
 DAXGEN_DIR = os.path.dirname(os.path.realpath(__file__))
 TEMPLATE_DIR = os.path.join(DAXGEN_DIR, "templates")
@@ -79,6 +80,7 @@ tr acme-setup {
         arch "x86_64"
         os "linux"
         type "STAGEABLE"
+        profile pegasus "exitcode.successmsg" "CESM BUILDEXE SCRIPT HAS FINISHED SUCCESSFULLY"
         profile globus "count" "1"
         profile globus "jobtype" "single"
         profile hints "grid.jobtype" "auxillary"
@@ -142,7 +144,8 @@ tr acme-amwg {
 
     def generate_dax(self):
         "Generate a workflow (DAX, config files, and replica catalog)"
-        dax = ADAG(self.casename)
+        ts = datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')
+        dax = ADAG("acme-%s" % ts)
 
         if self.stop_option in ["nyear", "nyears"]:
             amwg = True
@@ -163,7 +166,7 @@ tr acme-amwg {
         i = 1
         for stop_n, walltime in zip(self.stop_n, self.walltime):
             stage = Job(name="acme-run")
-            stage.addArguments("-stage %s -stop %s -n %s" % (i, self.stop_option, stop_n))
+            stage.addArguments("-case", self.casename, "-stage", str(i), "-stop", self.stop_option, "-n", str(stop_n))
             stage.addProfile(Profile(namespace="globus", key="maxwalltime", value=walltime))
             dax.addJob(stage)
             if i == 1:
@@ -178,7 +181,7 @@ tr acme-amwg {
             output = File("%s-stage%s/" % (self.casename, i))
 
             archive = Job(name="acme-output")
-            archive.addArguments("-stage %s" % i)
+            archive.addArguments("-case", self.casename, "-stage", str(i))
             archive.uses(output, link=Link.OUTPUT, register=False, transfer=True)
             archive.addProfile(Profile(namespace="globus", key="maxwalltime", value="30"))
             dax.addJob(archive)
@@ -208,7 +211,7 @@ tr acme-amwg {
 
                     # Add the job
                     diag = Job(name="acme-amwg")
-                    diag.addArguments(script)
+                    diag.addArguments("-case", self.casename, "-script", script)
                     diag.uses(script, link=Link.INPUT)
                     diag.uses(diagnostics, link=Link.OUTPUT, register=False, transfer=True)
                     diag.addProfile(Profile(namespace="globus", key="maxwalltime", value="30"))
