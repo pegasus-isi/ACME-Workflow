@@ -10,11 +10,17 @@
 #
 set -e
 
-$ACMEROOT/scripts/create_newcase -case $CASEROOT -mach hopper -compset F1850 -res T31_g37
+$ACMEROOT/scripts/create_newcase -case $CASEROOT -mach hopper -compset F1850 -res T31_g37 -project m2187
 
 cd $CASEROOT
 
+# Set the directory for executables
+./xmlchange -file env_build.xml -id EXEROOT -val $CASEROOT/bld
+
+# Set the run directory
+./xmlchange -file env_run.xml -id RUNDIR -val $CASEROOT/run
+
 ./cesm_setup
 
-./$CASENAME.build
+./$CASENAME.build || true
 
