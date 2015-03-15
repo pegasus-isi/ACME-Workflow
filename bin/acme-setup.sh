@@ -72,5 +72,7 @@ export CASEROOT
 export ACMEROOT
 
 # Run the setup script
-./$SETUP_SCRIPT
+./$SETUP_SCRIPT || true
+
+exit 0
 
