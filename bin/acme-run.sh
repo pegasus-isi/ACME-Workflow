@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/bin/bash -l
 
 set -e
 
 function usage () {
-    echo "Usage: $0 [-continue] -stage N -stop STOP_OPTION -n STOP_N"
+    echo "Usage: $0 [-continue] -case CASENAME -stage N -stop STOP_OPTION -n STOP_N"
 }
 
 if [ $# -eq 0 ]; then
@@ -14,6 +14,10 @@ fi
 CONTINUE_RUN=FALSE
 while [ "$#" -ne 0 ]; do
     case "$1" in
+        -case)
+            shift
+            CASENAME=$1
+            ;;
         -continue)
             CONTINUE_RUN=TRUE
             ;;
@@ -37,10 +41,17 @@ while [ "$#" -ne 0 ]; do
     shift
 done
 
+echo CASENAME $CASENAME
 echo STOP_N $STOP_N
 echo STOP_OPTION $STOP_OPTION
 echo CONTINUE_RUN $CONTINUE_RUN
 echo STAGE $STAGE
+
+if [ -z "$CASENAME" ]; then
+    echo "ERROR: Specify -case"
+    usage
+    exit 1
+fi
 
 if [ -z "$STAGE" ]; then
     echo "ERROR: Specify -stage"
@@ -60,6 +71,14 @@ if [ -z "$STOP_OPTION" ]; then
     exit 1
 fi
 
+export CASENAME
+export CASEROOT=$PWD/$CASENAME
+
+cd $CASENAME
+
+# Make sure that the run directory is correct
+./xmlchange -file env_run.xml -id RUNDIR -val $CASEROOT/run
+
 # We never want to resubmit the jobs in the Pegasus workflow
 ./xmlchange -file env_run.xml -id RESUBMIT -val 0
 
@@ -78,12 +97,9 @@ fi
 ./xmlchange -file env_run.xml -id CHECK_TIMING -val FALSE
 ./xmlchange -file env_run.xml -id SAVE_TIMING -val FALSE
 
-# Get the case name
-CASE=$(./xmlquery CASE -valonly -silent)
-
 # This script often returns non-zero, so we need to mask the failure
 # We use exitcode.successmessage to detect failures
-./$CASE.run || true
+/bin/csh ./$CASENAME.run || true
 
 exit 0
 

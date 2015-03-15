@@ -2,8 +2,42 @@
 
 set -e
 
-if [ $# -ne 1 ]; then
-    echo "Usage: $0 diag140804.csh"
+function usage () {
+    echo "Usage: $0 -case CASENAME -script diag140804.csh"
+}
+
+if [ $# -eq 0 ]; then
+    usage
+    exit 1
+fi
+
+while [ "$#" -ne 0 ]; do
+    case "$1" in
+        -case)
+            shift
+            CASENAME=$1
+            ;;
+        -script)
+            shift
+            SCRIPT=$1
+            ;;
+        *)
+            usage
+            exit 1
+            ;;
+    esac
+    shift
+done
+
+if [ -z "$CASENAME" ]; then
+    usage
+    echo "ERROR: Specify CASENAME"
+    exit 1
+fi
+
+if [ -z "$SCRIPT" ]; then
+    usage
+    echo "ERROR: Specify SCRIPT"
     exit 1
 fi
 
@@ -20,9 +54,7 @@ fi
 module load ncl
 module load nco
 
-# Chmod the templated script for this stage
-chmod 755 $1
+/bin/csh $PWD/$SCRIPT || true
 
-# Run the script on the service node
-./$1 || true
+exit 0
 
