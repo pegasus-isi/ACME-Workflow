@@ -117,7 +117,7 @@ tr acme-amwg {
         arch "x86_64"
         os "linux"
         type "STAGEABLE"
-        profile globus "count" "0"
+        profile globus "count" "1"
         profile globus "jobtype" "single"
         profile pegasus "exitcode.successmsg" "NORMAL EXIT FROM SCRIPT"
         profile pegasus "exitcode.failuremsg" "CONVERT NOT FOUND"
