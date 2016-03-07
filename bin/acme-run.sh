@@ -99,7 +99,7 @@ cd $CASENAME
 
 # This script often returns non-zero, so we need to mask the failure
 # We use exitcode.successmessage to detect failures
-/bin/csh ./$CASENAME.run || true
+/usr/bin/perl ./$CASENAME.run || true
 
 exit 0
 

@@ -51,7 +51,7 @@ STAGEDIR=$DIR/${CASENAME}-stage${STAGE}
 mkdir $STAGEDIR
 
 # Get the full path to the run directory
-RUNDIR=$(cd $CASEROOT && ./xmlquery RUNDIR -valonly -silent)
+RUNDIR=$(cd $CASEROOT && ./xmlquery RUNDIR -valonly)
 RUNDIR=$(cd $RUNDIR && pwd)
 
 # Touch this file here so that it will always exist, even if it is empty
