@@ -64,7 +64,7 @@ class ACMEWorkflow(object):
         f = open(path, "w")
         try:
             for name, url in self.replicas.items():
-                f.write('%-30s %-100s pool="local"\n' % (name, url))
+                f.write('%-30s %-100s pool="local-pbs-titan"\n' % (name, url))
         finally:
             f.close()
 
@@ -75,49 +75,51 @@ class ACMEWorkflow(object):
         try:
             f.write("""
 tr acme-setup {
-    site local {
+    site local-pbs-titan {
         pfn "file://%s/bin/acme-setup.sh"
         arch "x86_64"
-        os "linux"
+        os "LINUX"
         type "STAGEABLE"
-        profile pegasus "exitcode.successmsg" "CESM BUILDEXE SCRIPT HAS FINISHED SUCCESSFULLY"
-        profile globus "count" "1"
+        profile pegasus "exitcode.successmsg" ".... successfully built model executable"
+        profile pegasus "nodes" "1"
         profile globus "jobtype" "single"
+        profile globus "maxwalltime" "120"
         profile hints "grid.jobtype" "auxillary"
     }
 }
 
 tr acme-run {
-    site local {
+    site local-pbs-titan {
         pfn "file://%s/bin/acme-run.sh"
         arch "x86_64"
-        os "linux"
+        os "LINUX"
         type "STAGEABLE"
-        profile pegasus "exitcode.successmsg" "SUCCESSFUL TERMINATION"
-        profile globus "count" "%s"
+        profile pegasus "exitcode.successmsg" "CESM EXECUTION HAS FINISHED"
+        profile pegasus "nodes" "%s"
+        profile globus "maxwalltime" "90"
         profile globus "jobtype" "single"
     }
 }
 
 tr acme-output {
-    site local {
+    site local-pbs-titan {
         pfn "file://%s/bin/acme-output.sh"
         arch "x86_64"
-        os "linux"
+        os "LINUX"
         type "STAGEABLE"
-        profile globus "count" "1"
+        profile pegasus "nodes" "1"
         profile globus "jobtype" "single"
         profile hints "grid.jobtype" "auxillary"
     }
 }
 
 tr acme-amwg {
-    site local {
+    site local-pbs-titan {
         pfn "file://%s/bin/acme-amwg.sh"
         arch "x86_64"
-        os "linux"
+        os "LINUX"
         type "STAGEABLE"
-        profile globus "count" "1"
+        profile pegasus "nodes" "1"
         profile globus "jobtype" "single"
         profile pegasus "exitcode.successmsg" "NORMAL EXIT FROM SCRIPT"
         profile pegasus "exitcode.failuremsg" "CONVERT NOT FOUND"
@@ -150,7 +152,7 @@ tr acme-amwg {
         if self.stop_option in ["nyear", "nyears"]:
             amwg = True
         else:
-            print "WARNING: Diagnostics not added to workflow unles stop option is 'nyears'. Current setting is '%s'" % self.stop_option
+            print "WARNING: Diagnostics not added to workflow unless stop option is 'nyears'. Current setting is '%s'" % self.stop_option
             amwg = False
 
         # Add the setup stage
@@ -161,6 +163,7 @@ tr acme-amwg {
         dax.addJob(setup)
         self.add_replica(self.setup, os.path.join(self.outdir, self.setup))
 
+        prevstage = None
         last = None
         tot_years = 0
         i = 1
@@ -173,19 +176,21 @@ tr acme-amwg {
                 dax.depends(stage, setup)
             else:
                 stage.addArguments("-continue")
+                dax.depends(stage, prevstage)
 
             if last is not None:
                 dax.depends(stage, last)
-
+            
+            prevstage = stage
             # This is actually a directory
             output = File("%s-stage%s/" % (self.casename, i))
 
-            archive = Job(name="acme-output")
-            archive.addArguments("-case", self.casename, "-stage", str(i))
-            archive.uses(output, link=Link.OUTPUT, register=False, transfer=True)
-            archive.addProfile(Profile(namespace="globus", key="maxwalltime", value="30"))
-            dax.addJob(archive)
-            dax.depends(archive, stage)
+            #archive = Job(name="acme-output")
+            #archive.addArguments("-case", self.casename, "-stage", str(i))
+            #archive.uses(output, link=Link.OUTPUT, register=False, transfer=True)
+            #archive.addProfile(Profile(namespace="globus", key="maxwalltime", value="30"))
+            #dax.addJob(archive)
+            #dax.depends(archive, stage)
 
             # Figure out how many years we have at this point
             cur_years = int(stop_n)
@@ -218,7 +223,7 @@ tr acme-amwg {
                     dax.addJob(diag)
                     dax.depends(diag, stage)
 
-            last = archive
+            #last = archive
             i+=1
 
         # Write the DAX file
