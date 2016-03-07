@@ -10,7 +10,7 @@
 #
 set -e
 
-$ACMEROOT/scripts/create_newcase -case $CASEROOT -mach hopper -compset F1850 -res T31_g37 -project m2187
+$ACMEROOT/cime/scripts/create_newcase -case $CASEROOT -mach titan -compset F1850C5 -res ne30_g16 -project cli115 -compiler intel
 
 cd $CASEROOT
 
