@@ -5,6 +5,12 @@
              version="4.0">
 
     <site handle="local" arch="x86_64" os="LINUX">
+        <directory type="shared-scratch" path="/ccs/home/bmayer/PEGASUS">
+            <file-server operation="all" url="file:///ccs/home/bmayer/PEGASUS"/>
+        </directory>
+        <directory type="local-storage" path="/ccs/home/bmayer/PEGASUS">
+            <file-server operation="all" url="file:///ccs/home/bmayer/PEGASUS"/>
+        </directory>
     </site>
 
     <site handle="hopper" arch="x86_64" os="LINUX">
@@ -25,5 +31,37 @@
         <profile namespace="globus" key="project">m2187</profile>
         <profile namespace="globus" key="queue">regular</profile>
         <profile namespace="condor" key="periodic_remove">False</profile>
-    </site>
+	</site>
+
+    <site handle="local-pbs-titan" arch="x86_64" os="LINUX">
+
+	<!-- This is where the casedir goes. Put your username here instead of "juve". -->
+	<directory type="shared-scratch" path="/lustre/atlas/proj-shared/cli115/bmayer/PEGASUS">
+		<file-server operation="all" url="file:///lustre/atlas/proj-shared/cli115/bmayer/PEGASUS"/>
+	</directory>
+
+	<!-- This is where output files go. -->
+	<directory type="shared-storage" path="/lustre/atlas/proj-shared/cli115/bmayer/data">
+		<file-server operation="all" url="file:///lustre/atlas/proj-shared/cli115/bmayer/data" />
+	</directory>
+
+	<!--<profile namespace="env" key="PEGASUS_HOME">/sw/redhat6/pegasus/4.4.1/rhel6.6_gnu4.4.7/source/dist/pegasus-4.4.1/</profile> -->
+        <!-- <profile namespace="env" key="PEGASUS_HOME">/sw/redhat6/pegasus/4.5.3/</profile> -->
+	<profile namespace="env" key="PEGASUS_HOME">/sw/redhat6/pegasus/4.6.0/</profile> 
+	<profile namespace="pegasus" key="style" >glite</profile>
+	<profile namespace="pegasus" key="change.dir">true</profile>
+
+	<profile namespace="condor" key="grid_resource">pbs</profile>
+	<profile namespace="globus" key="queue">titan</profile>
+	<profile namespace="pegasus" key="nodes">1</profile> 
+	<profile namespace="globus" key="maxwalltime">10</profile> 
+	<profile namespace="pegasus" key="glite.arguments">-A CLI115</profile>
+	<profile namespace="pegasus" key="ppn">16</profile> 
+
+	<profile namespace="env" key="ACMEROOT">/lustre/atlas/proj-shared/cli115/bmayer/ACME</profile>
+	<profile namespace="env" key="DIAG_HOME">/project/projectdirs/m2187/amwg/amwg_diagnostics</profile>
+	<profile namespace="env" key="MAGICK_HOME">/project/projectdirs/m2187/ImageMagick-6.9.0.4</profile>
+	<profile namespace="condor" key="periodic_remove">False</profile>
+	</site>
+
 </sitecatalog>
