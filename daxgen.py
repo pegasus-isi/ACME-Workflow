@@ -176,7 +176,7 @@ tr acme-amwg {
                 dax.depends(stage, setup)
             else:
                 stage.addArguments("-continue")
-                dax.depends(stage, prevstage)
+                #dax.depends(stage, prevstage)
 
             if last is not None:
                 dax.depends(stage, last)
