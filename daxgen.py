@@ -40,7 +40,13 @@ class ACMEWorkflow(object):
         self.mppwidth = config.get("acme", "mppwidth")
         self.stop_option = config.get("acme", "stop_option")
         self.stop_n = [x.strip() for x in config.get("acme", "stop_n").split(",")]
-        self.walltime = [x.strip() for x in config.get("acme", "walltime").split(",")]
+        self.walltime = [x.strip() for x in config.get("acme", "walltime").split(",")
+
+        self.res      = config.get("acme", "res")
+        self.compiler = config.get("acme", "compiler")   
+        self.project  = config.get("acme", "project")
+        self.compset  = config.get("acme", "compset")
+        self.mach     = config.get("acme", "mach")
 
         if len(self.stop_n) != len(self.walltime):
             raise Exception("stop_n should have the same number of entries as walltime")
@@ -50,6 +56,11 @@ class ACMEWorkflow(object):
         f = open(path, "w")
         try:
             f.write("CASENAME=%s" % self.casename)
+            f.write("MACH=%s" % self.mach)
+            f.write("RES=%s" % self.res)
+            f.write("COMPILER=%s" % self.compiler)
+            f.write("PROJECT=%s" % self.project)
+            f.write("COMPSET=%s" % self.compset)
         finally:
             f.close()
 
