@@ -3,11 +3,12 @@ ACME-Workflow
 
 Pegasus workflow for ACME climate models.
 
-Consult the [CESM User's Guide](http://www.cesm.ucar.edu/models/cesm1.2/cesm/doc/usersguide/book1.html)
+Consult the [CESM User''s Guide](http://www.cesm.ucar.edu/models/cesm1.2/cesm/doc/usersguide/book1.html)
 for more information about the climate code used by this workflow.
 
 Steps to Run the Workflow
 -------------------------
+0. On Workflow1.ccs.ornl.gov run 'module load pegasus'
 
 1. Create/edit the configuration file (e.g. test.cfg)
 
@@ -23,6 +24,7 @@ Steps to Run the Workflow
  a. Set the create_newcase parameters
 
 3. Generate the DAX
+    On workflow1.ccs.ornl.gov use the python in:  
 
     $ python daxgen.py test.cfg mysetup.sh DIRNAME
 

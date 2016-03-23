@@ -10,6 +10,15 @@
 #
 set -e
 
+echo "ACMEROOT " $ACMEROOT
+echo 'CASEROOT ' $CASEROOT
+echo "MACH " $MACH
+echo "COMPSET " $COMPSET
+echo "RES " $RES
+echo "PROJECT " $PROJECT
+echo "COMPILER " $COMPILER
+echo "AENV " $AENV
+
 $ACMEROOT/cime/scripts/create_newcase -case $CASEROOT -mach $MACH -compset $COMPSET -res $RES -project $PROJECT -compiler $COMPILER
 
 cd $CASEROOT

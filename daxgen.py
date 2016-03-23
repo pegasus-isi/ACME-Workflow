@@ -40,7 +40,7 @@ class ACMEWorkflow(object):
         self.mppwidth = config.get("acme", "mppwidth")
         self.stop_option = config.get("acme", "stop_option")
         self.stop_n = [x.strip() for x in config.get("acme", "stop_n").split(",")]
-        self.walltime = [x.strip() for x in config.get("acme", "walltime").split(",")
+        self.walltime = [x.strip() for x in config.get("acme", "walltime").split(",")]
 
         self.res      = config.get("acme", "res")
         self.compiler = config.get("acme", "compiler")   
@@ -55,12 +55,12 @@ class ACMEWorkflow(object):
         path = os.path.join(self.outdir, "env.sh")
         f = open(path, "w")
         try:
-            f.write("CASENAME=%s" % self.casename)
-            f.write("MACH=%s" % self.mach)
-            f.write("RES=%s" % self.res)
-            f.write("COMPILER=%s" % self.compiler)
-            f.write("PROJECT=%s" % self.project)
-            f.write("COMPSET=%s" % self.compset)
+            f.write("CASENAME=%s\n" % self.casename)
+            f.write("MACH=%s\n" % self.mach)
+            f.write("RES=%s\n" % self.res)
+            f.write("COMPILER=%s\n" % self.compiler)
+            f.write("PROJECT=%s\n" % self.project)
+            f.write("COMPSET=%s\n" % self.compset)
         finally:
             f.close()
 
@@ -92,7 +92,13 @@ tr acme-setup {
         os "LINUX"
         type "STAGEABLE"
         profile pegasus "exitcode.successmsg" ".... successfully built model executable"
+        profile pegasus "exitcode.failuremsg" "OPTIONS"
         profile pegasus "nodes" "1"
+        profile env "MACH" "%s"
+        profile env "COMPSET" "%s"
+        profile env "RES" "%s"
+        profile env "PROJECT" "%s"
+        profile env "COMPILER" "%s"
         profile globus "jobtype" "single"
         profile globus "maxwalltime" "120"
         profile hints "grid.jobtype" "auxillary"
@@ -137,7 +143,7 @@ tr acme-amwg {
         profile pegasus "exitcode.failuremsg" "Segmentation fault"
     }
 }
-""" % (DAXGEN_DIR, DAXGEN_DIR, self.mppwidth, DAXGEN_DIR, DAXGEN_DIR))
+""" % (DAXGEN_DIR, self.mach, self.compset, self.res, self.project, self.compiler, DAXGEN_DIR, self.mppwidth, DAXGEN_DIR, DAXGEN_DIR))
         finally:
             f.close()
 
@@ -187,7 +193,7 @@ tr acme-amwg {
                 dax.depends(stage, setup)
             else:
                 stage.addArguments("-continue")
-                #dax.depends(stage, prevstage)
+                dax.depends(stage, prevstage)
 
             if last is not None:
                 dax.depends(stage, last)

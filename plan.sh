@@ -1,7 +1,7 @@
 #!/bin/bash
 
-SITE=hopper
-OUTPUT_SITE=hopper
+SITE=local-pbs-titan
+OUTPUT_SITE=local-pbs-titan
 
 if [ $# -ne 1 ]; then
     echo "Usage: $0 WORKFLOW_DIR"

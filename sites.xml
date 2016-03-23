@@ -53,7 +53,7 @@
 
 	<profile namespace="condor" key="grid_resource">pbs</profile>
 	<profile namespace="globus" key="queue">titan</profile>
-	<profile namespace="pegasus" key="nodes">1</profile> 
+	<profile namespace="pegasus" key="nodes">0</profile> 
 	<profile namespace="globus" key="maxwalltime">10</profile> 
 	<profile namespace="pegasus" key="glite.arguments">-A CLI115</profile>
 	<profile namespace="pegasus" key="ppn">16</profile> 
